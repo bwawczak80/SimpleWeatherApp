@@ -12,34 +12,15 @@ import Foundation
 class ViewController: UIViewController {
     
     @IBOutlet weak var currentTemp: UILabel!
-    
     @IBOutlet weak var currentSummary: UILabel!
-    
     @IBOutlet weak var currentHumidity: UILabel!
-    
     @IBOutlet weak var currentApparentTemp: UILabel!
-    
     @IBOutlet weak var imageView: UIImageView!
-    
-    
-    var iconImage: [UIImage] = [
-        UIImage(named: "clear-day.png")!,
-        UIImage(named: "clear-night.png")!,
-        UIImage(named: "cloudy.png")!,
-        UIImage(named: "default.png")!,
-        UIImage(named: "fog.png")!,
-        UIImage(named: "partly-cloudy-day.png")!,
-        UIImage(named: "partly-cloudy-night.png")!,
-        UIImage(named: "rain.png")!,
-        UIImage(named: "snow.png")!,
-        UIImage(named: "sleet.png")!,
-        UIImage(named: "wind.png")!
-    ]
-    
+
     var imageName: [String] = [
         String("clear-day"),
         String("clear-night"),
-        String("cloudy.png"),
+        String("cloudy"),
         String("default"),
         String("fog"),
         String("partly-cloudy-day"),
@@ -53,10 +34,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
-        
-        if let url = NSURL(string: "https://api.forecast.io/forecast/05f17d12e654801312d18552ec8b2704/37.7833,122.4167") {
+        if let url = NSURL(string: "https://api.forecast.io/forecast/05f17d12e654801312d18552ec8b2704/42.2132,-88.2477") {
             if let data = NSData(contentsOf: url as URL){
                 do {
                     let parsed = try JSONSerialization.jsonObject(with: data as Data, options: JSONSerialization.ReadingOptions.allowFragments) as! [String:AnyObject]
@@ -64,41 +42,30 @@ class ViewController: UIViewController {
                     let newDict = parsed
                     
                     let icon = newDict["currently"]!["icon"] as! String
-                    
                     var temp = newDict["currently"]!["temperature"] as! Double
                     temp = round(temp)
-                    
                     var humid = newDict["currently"]!["humidity"] as! Double
-                    humid = humid * 100
-                    
+                    humid = round(humid * 100)
                     var aTemp = newDict["currently"]!["apparentTemperature"] as! Double
                     aTemp = round(aTemp)
-                    
-                    
-                    
+
                     if imageName.contains(icon) {
                         let imageToDisplay = ("\(icon).png")
-
-                        print(imageToDisplay)
-                        print("\(icon) it works")
+                        imageView.image = UIImage(named: imageToDisplay)
                     }else{
-                        print("didn't work \(icon)")
+                        imageView.image = UIImage(named: "default.png")
                     }
                     
-                    
-//                    self.currentHumidity.text = "\(String(describing: humid)) %"
-//                    self.currentTemp.text = "\(temp)F"
-//                    self.currentSummary.text = "\(newDict["currently"]!["summary"]!!)"
-//                    self.currentApparentTemp.text = "Feels like \(aTemp)F"
-                    
+                    self.currentHumidity.text = "\(String(describing: humid)) %"
+                    self.currentTemp.text = "\(temp)\u{00B0}F"
+                    self.currentSummary.text = "\(newDict["currently"]!["summary"]!!)"
+                    self.currentApparentTemp.text = "Feels like \(aTemp)\u{00B0}F"
                 }
                 catch let error as NSError {
                     print("A JSON parsithng error occurred, here are the details:\n \(error)")
                 }
             }
         }
-        
     }
-    
 }
 
